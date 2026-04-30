@@ -3,6 +3,9 @@ from epub_to_md.orchestrator import convert
 from epub_to_md.exceptions import EpubToMdError
 
 
+REPO_URL = "https://github.com/qm965/epub-to-md"
+
+
 @click.command()
 @click.argument("epub_path", type=click.Path(exists=True, readable=True))
 @click.option("-o", "--output", default=None, help="Output .md file path")
@@ -12,6 +15,8 @@ def main(epub_path: str, output: str | None) -> None:
     Output includes YAML metadata (title, author), full table of contents
     extracted from NCX/Nav, base64-embedded images, tables, code blocks,
     and footnotes.
+
+    Repository: https://github.com/qm965/epub-to-md
 
     Examples:
 
