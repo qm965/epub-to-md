@@ -14,6 +14,9 @@ pipx ensurepath
 # 从 GitHub 安装
 pipx install git+https://github.com/qm965/epub-to-md.git
 
+# 从本地安装（需先构建，产物在 dist/ 目录）
+pipx install dist/epub_to_md-0.1.0-py3-none-any.whl
+
 # 更新
 pipx upgrade epub-to-md
 
