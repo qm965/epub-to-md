@@ -5,7 +5,7 @@ from epub_to_md.epub_parser import Epub, Metadata, Chapter
 def test_resolve_images_replaces_src_with_base64():
     epub = Epub(
         metadata=Metadata(title="T", creator="A"),
-        chapters=[Chapter(id="c1", html_content='<img src="images/pic.png"/>')],
+        chapters=[Chapter(id="c1", href="test.xhtml", html_content='<img src="images/pic.png"/>')],
         images={"OEBPS/images/pic.png": b"fake_png_bytes"},
     )
     html = epub.chapters[0].html_content
@@ -17,7 +17,7 @@ def test_resolve_images_replaces_src_with_base64():
 def test_resolve_images_handles_jpg():
     epub = Epub(
         metadata=Metadata(title="T", creator="A"),
-        chapters=[Chapter(id="c1", html_content='<img src="images/photo.jpg"/>')],
+        chapters=[Chapter(id="c1", href="test.xhtml", html_content='<img src="images/photo.jpg"/>')],
         images={"OEBPS/images/photo.jpg": b"fake_jpeg_bytes"},
     )
     result = resolve_images(epub.chapters[0].html_content, "OEBPS/", epub.images)
@@ -28,7 +28,7 @@ def test_resolve_images_nonexistent_image():
     """If image file not found in EPUB, leave the original src."""
     epub = Epub(
         metadata=Metadata(title="T", creator="A"),
-        chapters=[Chapter(id="c1", html_content='<img src="missing.png"/>')],
+        chapters=[Chapter(id="c1", href="test.xhtml", html_content='<img src="missing.png"/>')],
         images={},
     )
     result = resolve_images(epub.chapters[0].html_content, "OEBPS/", epub.images)
