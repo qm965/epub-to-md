@@ -64,25 +64,41 @@ def _extract_opf_path(container_xml: str) -> str:
 def _extract_metadata(opf_xml: str) -> Metadata:
     import re
     title_match = re.search(r'<dc:title[^>]*>(.*?)</dc:title>', opf_xml, re.DOTALL)
+    title = title_match.group(1).strip() if title_match else ""
+
+    # Try standard dc:creator first, then file-as refinement (EPUB 3 self-closing form)
+    creator = ""
     creator_match = re.search(r'<dc:creator[^>]*>(.*?)</dc:creator>', opf_xml, re.DOTALL)
-    return Metadata(
-        title=title_match.group(1).strip() if title_match else "",
-        creator=creator_match.group(1).strip() if creator_match else "",
-    )
+    if creator_match:
+        creator = creator_match.group(1).strip()
+    if not creator:
+        file_as_match = re.search(
+            r'<meta\s+property="file-as"[^>]*refines="#([^"]+)"[^>]*>([^<]+)</meta>',
+            opf_xml,
+        )
+        if file_as_match:
+            creator = file_as_match.group(2).strip()
+
+    return Metadata(title=title, creator=creator)
 
 
 def _extract_chapter_files(opf_xml: str) -> list[tuple[str, str]]:
     import re
     spine_refs = re.findall(r'<itemref[^>]+idref="([^"]+)"', opf_xml)
-    manifest_items = re.findall(
-        r'<item[^>]+id="([^"]+)"[^>]+href="([^"]+)"[^>]*media-type="application/xhtml\+html"[^>]*>',
-        opf_xml,
-    )
-    manifest_items += re.findall(
-        r'<item[^>]+id="([^"]+)"[^>]+href="([^"]+)"[^>]*>',
-        opf_xml,
-    )
-    item_map = {item_id: href for item_id, href in manifest_items}
+
+    # Match all <item .../> elements regardless of attribute order
+    item_map: dict[str, str] = {}
+    for match in re.finditer(r'<item\s[^>]*/>', opf_xml):
+        item_tag = match.group(0)
+        id_match = re.search(r'id="([^"]+)"', item_tag)
+        href_match = re.search(r'href="([^"]+)"', item_tag)
+        if id_match and href_match:
+            item_id = id_match.group(1)
+            href = href_match.group(1)
+            if href.endswith(".xhtml") or href.endswith(".html"):
+                # Resolve relative paths
+                item_map[item_id] = href
+
     result = []
     for ref in spine_refs:
         if ref in item_map:

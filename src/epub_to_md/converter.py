@@ -1,4 +1,7 @@
-from bs4 import BeautifulSoup, Tag, NavigableString
+import warnings
+from bs4 import BeautifulSoup, Tag, NavigableString, XMLParsedAsHTMLWarning
+
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 
 def html_to_md(html: str) -> str:

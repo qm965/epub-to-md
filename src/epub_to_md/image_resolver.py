@@ -9,14 +9,18 @@ def resolve_images(html: str, base_dir: str, images: dict[str, bytes]) -> str:
     Tries multiple path resolutions since EPUB internal paths vary.
     """
     def _replace(match: re.Match) -> str:
-        src = match.group(1)
-        alt = match.group(2) or ""
+        tag = match.group(0)
+        src_match = re.search(r'src="([^"]*)"', tag)
+        alt_match = re.search(r'alt="([^"]*)"', tag)
+        if not src_match:
+            return tag
+        src = src_match.group(1)
+        alt = alt_match.group(1) if alt_match else ""
 
         # Try exact match, then with base_dir prefix, then various path resolutions
         candidates = [src]
         if base_dir:
             candidates.append(f"{base_dir}/{src}")
-            # Also try parent dir without last component
             parts = base_dir.split("/")
             for i in range(len(parts) - 1, 0, -1):
                 candidates.append(f"{'/'.join(parts[:i])}/{src}")
@@ -29,7 +33,6 @@ def resolve_images(html: str, base_dir: str, images: dict[str, bytes]) -> str:
                 matched_key = candidate
                 break
 
-        # Fuzzy match: search by filename only
         if image_data is None:
             src_filename = Path(src).name
             for key, data in images.items():
@@ -39,18 +42,13 @@ def resolve_images(html: str, base_dir: str, images: dict[str, bytes]) -> str:
                     break
 
         if image_data is None:
-            # Image not found — leave src as-is
-            return match.group(0)
+            return tag
 
         mime = _get_mime_type(matched_key or src)
         b64 = base64.b64encode(image_data).decode("ascii")
         return f'<img src="data:{mime};base64,{b64}" alt="{alt}"/>'
 
-    return re.sub(
-        r'<img\s+src="([^"]*)"(?:\s+alt="([^"]*)")?\s*/?>',
-        _replace,
-        html,
-    )
+    return re.sub(r'<img[^>]*>', _replace, html)
 
 
 def _get_mime_type(filename: str) -> str:
