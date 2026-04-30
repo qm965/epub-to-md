@@ -7,7 +7,14 @@
 ### 方式一：pip 安装（需 Python 3.11+）
 
 ```bash
+# 安装
 pip install dist/epub_to_md-0.1.0-py3-none-any.whl
+
+# 更新（重新打包后）
+pip install --force-reinstall dist/epub_to_md-0.1.0-py3-none-any.whl
+
+# 卸载
+pip uninstall epub-to-md
 ```
 
 ### 方式二：独立可执行文件（无需 Python）
