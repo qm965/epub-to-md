@@ -41,7 +41,7 @@ def _convert_node(node: Tag | NavigableString, indent: int) -> list[str]:
             text = _inline_text(node)
             return [f"{text}", ""] if text else [""]
         case "br":
-            return ["<br>", ""]
+            return ["", ""]
         case "hr":
             return ["---", ""]
         case "blockquote":
@@ -196,13 +196,15 @@ def _inline_text(node: Tag) -> str:
                 case "a":
                     href = child.get("href", "")
                     text = _inline_text(child).strip()
-                    # Detect footnote links (noteref class, epub:type="noteref", or href to footnotes)
+                    # Detect footnote links — render as clean [fnN]
                     if (child.get("epub:type") == "noteref"
                             or "noteref" in (child.get("class", "") or "")
                             or "footnote" in href.lower()
                             or "fn" in href.lower()):
-                        # Remove cross-file path, keep just the footnote ID text
                         parts.append(f"[{text}]")
+                    # Strip cross-chapter links (page refs like chapter001.xhtml#pg11)
+                    elif ".xhtml" in href.lower() or ".html" in href.lower():
+                        parts.append(text)
                     else:
                         parts.append(f"[{text}]({href})")
                 case "img":
@@ -212,7 +214,7 @@ def _inline_text(node: Tag) -> str:
                 case "code":
                     parts.append(f"`{child.get_text()}`")
                 case "br":
-                    parts.append("<br>")
+                    parts.append("  \n")
                 case "math":
                     parts.append(_convert_math(child))
                 case "sup":
