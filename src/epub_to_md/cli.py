@@ -1,5 +1,6 @@
 import click
 from epub_to_md.orchestrator import convert
+from epub_to_md.exceptions import EpubToMdError
 
 
 @click.command()
@@ -10,17 +11,27 @@ def main(epub_path: str, output: str | None) -> None:
     if output is None:
         output = epub_path.replace(".epub", ".md") if epub_path.endswith(".epub") else epub_path + ".md"
 
-    click.echo(f"Reading: {epub_path}")
-    with open(epub_path, "rb") as f:
-        epub_data = f.read()
+    try:
+        click.echo(f"Reading: {epub_path}")
+        with open(epub_path, "rb") as f:
+            epub_data = f.read()
 
-    click.echo("Converting...")
-    md_content = convert(epub_data)
+        click.echo("Converting...")
+        md_content = convert(epub_data)
 
-    with open(output, "w", encoding="utf-8") as f:
-        f.write(md_content)
+        with open(output, "w", encoding="utf-8") as f:
+            f.write(md_content)
 
-    click.echo(f"Written: {output}")
+        click.echo(f"Written: {output}")
+    except EpubToMdError as e:
+        click.echo(f"Error: {e}", err=True)
+        raise SystemExit(1)
+    except OSError as e:
+        click.echo(f"File error: {e}", err=True)
+        raise SystemExit(1)
+    except Exception as e:
+        click.echo(f"Unexpected error: {e}", err=True)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
