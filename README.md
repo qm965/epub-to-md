@@ -8,19 +8,17 @@
 
 ```bash
 # 从 GitHub 直接安装
-pip install git+https://github.com/qm965/epub-to-md.git
+python3 -m pip install git+https://github.com/qm965/epub-to-md.git
 
 # 从本地构建产物安装（需先构建，产物在 dist/ 目录）
-pip install dist/epub_to_md-0.1.0-py3-none-any.whl
+python3 -m pip install dist/epub_to_md-0.1.0-py3-none-any.whl
 
 # 更新
-pip install --force-reinstall git+https://github.com/qm965/epub-to-md.git
+python3 -m pip install --force-reinstall git+https://github.com/qm965/epub-to-md.git
 
 # 卸载
-pip uninstall epub-to-md
+python3 -m pip uninstall epub-to-md
 ```
-
-> 如果系统中 `pip` 指向旧版本 Python，用 `pip3` 或 `python3 -m pip`。
 
 ### 方式二：独立可执行文件（无需 Python）
 
