@@ -41,7 +41,7 @@ def _convert_node(node: Tag | NavigableString, indent: int) -> list[str]:
             text = _inline_text(node)
             return [f"{text}", ""] if text else [""]
         case "br":
-            return ["  \\n"]
+            return ["<br>", ""]
         case "hr":
             return ["---", ""]
         case "blockquote":
@@ -204,7 +204,7 @@ def _inline_text(node: Tag) -> str:
                 case "code":
                     parts.append(f"`{child.get_text()}`")
                 case "br":
-                    parts.append("  \\n")
+                    parts.append("<br>")
                 case "math":
                     parts.append(_convert_math(child))
                 case "sup":
