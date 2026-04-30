@@ -4,20 +4,29 @@
 
 ## 安装
 
-### 方式一：pip 安装（需 Python 3.11+）
+### 方式一：pipx 安装（推荐，需 Python 3.11+）
 
 ```bash
-# 从 GitHub 直接安装
-python3 -m pip install git+https://github.com/qm965/epub-to-md.git
+# 安装 pipx（如未安装）
+brew install pipx
+pipx ensurepath
 
-# 从本地构建产物安装（需先构建，产物在 dist/ 目录）
-python3 -m pip install dist/epub_to_md-0.1.0-py3-none-any.whl
+# 从 GitHub 安装
+pipx install git+https://github.com/qm965/epub-to-md.git
 
 # 更新
-python3 -m pip install --force-reinstall git+https://github.com/qm965/epub-to-md.git
+pipx upgrade epub-to-md
 
 # 卸载
-python3 -m pip uninstall epub-to-md
+pipx uninstall epub-to-md
+```
+
+也可在虚拟环境中使用 pip：
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install dist/epub_to_md-0.1.0-py3-none-any.whl
 ```
 
 ### 方式二：独立可执行文件（无需 Python）

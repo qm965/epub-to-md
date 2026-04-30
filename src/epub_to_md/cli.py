@@ -24,13 +24,13 @@ def main(epub_path: str, output: str | None) -> None:
 
         epub-to-md book.epub -o output.md
 
-    Uninstall:
+    Uninstall (pipx):
 
-        python3 -m pip uninstall epub-to-md
+        pipx uninstall epub-to-md
 
-    Update:
+    Update (pipx):
 
-        python3 -m pip install --force-reinstall git+https://github.com/qm965/epub-to-md.git
+        pipx upgrade epub-to-md
     """
     if output is None:
         output = epub_path.replace(".epub", ".md") if epub_path.endswith(".epub") else epub_path + ".md"
