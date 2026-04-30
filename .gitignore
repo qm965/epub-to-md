@@ -4,6 +4,7 @@ venv/
 .venv/
 *.md
 !README.md
+!CLAUDE.md
 !docs/superpowers/plans/*.md
 输家赢家.epub
 显化.epub
