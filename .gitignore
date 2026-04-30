@@ -4,3 +4,5 @@ venv/
 .venv/
 *.md
 !docs/superpowers/plans/*.md
+显化.epub
+显化.md
