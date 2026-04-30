@@ -7,11 +7,14 @@
 ### 方式一：pip 安装（需 Python 3.11+）
 
 ```bash
-# 安装
+# 从 GitHub 直接安装
+pip install git+https://github.com/qm965/epub-to-md.git
+
+# 从本地构建产物安装（需先构建，产物在 dist/ 目录）
 pip install dist/epub_to_md-0.1.0-py3-none-any.whl
 
-# 更新（重新打包后）
-pip install --force-reinstall dist/epub_to_md-0.1.0-py3-none-any.whl
+# 更新
+pip install --force-reinstall git+https://github.com/qm965/epub-to-md.git
 
 # 卸载
 pip uninstall epub-to-md
