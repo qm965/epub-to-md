@@ -3,9 +3,10 @@ __pycache__/
 venv/
 .venv/
 *.md
+!README.md
 !docs/superpowers/plans/*.md
+输家赢家.epub
 显化.epub
 显化.md
 dist/
 *.spec
-__pycache__/
