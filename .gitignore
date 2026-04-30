@@ -9,4 +9,5 @@ venv/
 显化.epub
 显化.md
 dist/
+build/
 *.spec
