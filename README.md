@@ -17,12 +17,16 @@ pip install --force-reinstall dist/epub_to_md-0.1.0-py3-none-any.whl
 pip uninstall epub-to-md
 ```
 
+> 如果系统中 `pip` 指向旧版本 Python，用 `pip3` 或 `python3 -m pip`。
+
 ### 方式二：独立可执行文件（无需 Python）
 
 ```bash
 # Mac (x86_64)
 cp dist/epub-to-md ~/.local/bin/
 ```
+
+之后可在任意目录直接运行。
 
 ## 使用
 
@@ -31,27 +35,45 @@ epub-to-md 书.epub
 epub-to-md 书.epub -o 输出.md
 ```
 
-输出包含：
-- YAML 元数据（书名、作者）
-- 完整目录层级（从 NCX/Nav 提取）
-- 内嵌图片（base64）
-- 表格、代码块、脚注等常见格式
+输出说明：
+- 开头为 YAML 元数据（书名、作者、来源）
+- 标题层级从 EPUB 原生目录（NCX/Nav）提取，不管原书用 `<h1>` 还是 CSS class
+- 图片以内联 base64 嵌入，不产生额外图片文件
+- 表格、代码块、脚注等常见格式保留
 
-## 项目说明
+## 从源码运行
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e "."
+epub-to-md 书.epub
+```
+
+## 项目结构
 
 核心逻辑在 `src/epub_to_md/`：
 
 | 模块 | 职责 |
 |------|------|
-| `epub_parser.py` | 解包 EPUB，提取元数据、章节、图片、目录 |
-| `converter.py` | XHTML → Markdown 转换 |
+| `epub_parser.py` | 解包 EPUB，提取元数据、章节、图片、目录（NCX/Nav） |
+| `converter.py` | XHTML → Markdown 转换（含表格、代码、脚注等） |
 | `image_resolver.py` | 图片 base64 内嵌 |
-| `orchestrator.py` | 编排各模块 |
+| `orchestrator.py` | 编排各模块，注入目录标题 |
+| `exceptions.py` | 自定义异常 |
 | `cli.py` | 命令行界面 |
 
 ## 构建
 
 ```bash
-python -m build --wheel                    # pip 包
-pyinstaller --onefile src/epub_to_md/cli.py  # 独立可执行文件
+# 1. 激活虚拟环境
+source .venv/bin/activate
+
+# 2. pip 包
+python -m build --wheel
+
+# 3. 独立可执行文件
+pyinstaller --onefile src/epub_to_md/cli.py
+
+# 产物在 dist/ 目录
 ```
