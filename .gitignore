@@ -6,3 +6,6 @@ venv/
 !docs/superpowers/plans/*.md
 显化.epub
 显化.md
+dist/
+*.spec
+__pycache__/
