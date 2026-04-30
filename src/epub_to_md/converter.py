@@ -195,8 +195,16 @@ def _inline_text(node: Tag) -> str:
                     parts.append(f"*{_inline_text(child)}*")
                 case "a":
                     href = child.get("href", "")
-                    text = _inline_text(child)
-                    parts.append(f"[{text}]({href})")
+                    text = _inline_text(child).strip()
+                    # Detect footnote links (noteref class, epub:type="noteref", or href to footnotes)
+                    if (child.get("epub:type") == "noteref"
+                            or "noteref" in (child.get("class", "") or "")
+                            or "footnote" in href.lower()
+                            or "fn" in href.lower()):
+                        # Remove cross-file path, keep just the footnote ID text
+                        parts.append(f"[{text}]")
+                    else:
+                        parts.append(f"[{text}]({href})")
                 case "img":
                     src = child.get("src", "")
                     alt = child.get("alt", "")
@@ -208,7 +216,12 @@ def _inline_text(node: Tag) -> str:
                 case "math":
                     parts.append(_convert_math(child))
                 case "sup":
-                    parts.append(f"^{{ {_inline_text(child)} }}")
+                    inner = _inline_text(child).strip()
+                    # Clean sup wrapping for footnote links
+                    if inner.startswith("[") and inner.endswith("]"):
+                        parts.append(inner)
+                    else:
+                        parts.append(f"^{{ {inner} }}")
                 case "sub":
                     parts.append(f"~{_inline_text(child)}~")
                 case "span" | "u" | "s" | "del" | "ins" | "small" | "abbr":
