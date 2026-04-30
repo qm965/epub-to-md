@@ -66,18 +66,22 @@ def _extract_metadata(opf_xml: str) -> Metadata:
     title_match = re.search(r'<dc:title[^>]*>(.*?)</dc:title>', opf_xml, re.DOTALL)
     title = title_match.group(1).strip() if title_match else ""
 
-    # Try standard dc:creator first, then file-as refinement (EPUB 3 self-closing form)
+    # Try standard dc:creator first
     creator = ""
     creator_match = re.search(r'<dc:creator[^>]*>(.*?)</dc:creator>', opf_xml, re.DOTALL)
     if creator_match:
         creator = creator_match.group(1).strip()
+
+    # Fallback: EPUB 3 self-closing dc:creator with file-as meta refinement
     if not creator:
-        file_as_match = re.search(
-            r'<meta\s+property="file-as"[^>]*refines="#([^"]+)"[^>]*>([^<]+)</meta>',
-            opf_xml,
-        )
-        if file_as_match:
-            creator = file_as_match.group(2).strip()
+        for meta_match in re.finditer(r'<meta\s[^>]*>([^<]*)</meta>', opf_xml):
+            meta_tag = meta_match.group(0)
+            if 'property="file-as"' in meta_tag:
+                refines_match = re.search(r'refines="#([^"]+)"', meta_tag)
+                content = meta_match.group(1).strip()
+                if refines_match and content:
+                    creator = content
+                    break
 
     return Metadata(title=title, creator=creator)
 
@@ -88,7 +92,8 @@ def _extract_chapter_files(opf_xml: str) -> list[tuple[str, str]]:
 
     # Match all <item .../> elements regardless of attribute order
     item_map: dict[str, str] = {}
-    for match in re.finditer(r'<item\s[^>]*/>', opf_xml):
+    # Match <item.../> (self-closing) or <item>...</item> (EPUB 2)
+    for match in re.finditer(r'<item\s[^>]*?(?:/>|</item>)', opf_xml):
         item_tag = match.group(0)
         id_match = re.search(r'id="([^"]+)"', item_tag)
         href_match = re.search(r'href="([^"]+)"', item_tag)
