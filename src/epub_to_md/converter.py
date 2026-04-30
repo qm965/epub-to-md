@@ -39,7 +39,22 @@ def _convert_node(node: Tag | NavigableString, indent: int) -> list[str]:
             return [f"###### {_inline_text(node)}", ""]
         case "p":
             text = _inline_text(node)
-            return [f"{text}", ""] if text else [""]
+            if not text:
+                return [""]
+            # Detect class-based headings (EPUBs using styled <p> instead of <h1-6>)
+            p_class = (node.get("class", "") or [])
+            if isinstance(p_class, list):
+                p_class = " ".join(p_class)
+            else:
+                p_class = str(p_class)
+            cls_lower = p_class.lower()
+            if any(kw in cls_lower for kw in ["ch-title", "chapter-title", "chap-title", "part-title"]):
+                return [f"# {text}", ""]
+            if "heading-4" in cls_lower:
+                return [f"#### {text}", ""]
+            if "heading-5" in cls_lower:
+                return [f"##### {text}", ""]
+            return [f"{text}", ""]
         case "br":
             return ["", ""]
         case "hr":
