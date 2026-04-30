@@ -73,7 +73,7 @@ source .venv/bin/activate
 python -m build --wheel
 
 # 3. 独立可执行文件
-pyinstaller --onefile src/epub_to_md/cli.py
+pyinstaller --onefile --name epub-to-md src/epub_to_md/cli.py
 
 # 产物在 dist/ 目录
 ```
