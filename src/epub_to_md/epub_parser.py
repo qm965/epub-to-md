@@ -133,7 +133,7 @@ def _extract_chapter_files(opf_xml: str) -> tuple[list[tuple[str, str]], str | N
                 ncx_href = href
             elif 'properties="nav"' in item_tag:
                 nav_href = href
-            if href.endswith(".xhtml") or href.endswith(".html"):
+            if href.endswith(".xhtml") or href.endswith(".html") or href.endswith(".htm"):
                 item_map[item_id] = href
 
     result = []

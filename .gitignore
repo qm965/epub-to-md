@@ -6,10 +6,8 @@ venv/
 !README.md
 !CLAUDE.md
 !docs/superpowers/plans/*.md
-输家赢家.epub
-显化.epub
-显化.md
+*.epub
+*.md
 dist/
 build/
-*.spec
 .claude/settings.local.json
