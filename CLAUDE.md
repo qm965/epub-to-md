@@ -43,3 +43,5 @@ pyinstaller --onefile --name epub-to-md src/epub_to_md/cli.py
 - `<item>` 和 `<img>` 属性顺序不固定，解析时按「匹配整标签 → 逐个提取属性」处理
 - 标题优先从 NCX/Nav 提取，CSS class 启发式检测作为补充
 - Homebrew Python 有 PEP 668 保护，全局安装用 pipx
+- XHTML 扩展名可能是 `.xhtml`、`.html` 或 `.htm`，解析 OPF manifest 时三者都需匹配
+- 可编辑安装（`pip install -e .`）修改源码后需重装才能生效：`pip install -e .`
