@@ -26,17 +26,17 @@ def _convert_node(node: Tag | NavigableString, indent: int) -> list[str]:
     match tag:
         # Block-level elements
         case "h1":
-            return [f"# {_inline_text(node)}", ""]
+            return [f"# {_heading_text(node)}", ""]
         case "h2":
-            return [f"## {_inline_text(node)}", ""]
+            return [f"## {_heading_text(node)}", ""]
         case "h3":
-            return [f"### {_inline_text(node)}", ""]
+            return [f"### {_heading_text(node)}", ""]
         case "h4":
-            return [f"#### {_inline_text(node)}", ""]
+            return [f"#### {_heading_text(node)}", ""]
         case "h5":
-            return [f"##### {_inline_text(node)}", ""]
+            return [f"##### {_heading_text(node)}", ""]
         case "h6":
-            return [f"###### {_inline_text(node)}", ""]
+            return [f"###### {_heading_text(node)}", ""]
         case "p":
             text = _inline_text(node)
             if not text:
@@ -192,6 +192,13 @@ def _convert_math(math_node: Tag) -> str:
             case _:
                 return node.get_text()
     return _math_text(math_node) if isinstance(math_node, Tag) else str(math_node)
+
+
+def _heading_text(node: Tag) -> str:
+    """Inline text for headings — collapses line breaks to spaces."""
+    import re
+    text = _inline_text(node)
+    return re.sub(r'\s*\n\s*', ' ', text).strip()
 
 
 def _inline_text(node: Tag) -> str:

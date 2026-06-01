@@ -42,6 +42,8 @@ def _epub_to_md(epub: Epub) -> str:
 
         # Inject TOC headings for this chapter
         for entry in toc_by_file.get(chapter.href, []):
+            if _heading_already_exists(html, entry.title):
+                continue
             heading_html = f"<h{entry.level + 1}>{entry.title}</h{entry.level + 1}>"
             html = _inject_heading(html, heading_html, entry)
 
@@ -49,6 +51,17 @@ def _epub_to_md(epub: Epub) -> str:
         parts.append(md)
 
     return "\n".join(parts)
+
+
+def _heading_already_exists(html: str, title: str) -> bool:
+    """Check if the HTML already contains a heading with the same text."""
+    existing = re.findall(r'<h[1-6][^>]*>(.*?)</h[1-6]>', html, re.DOTALL | re.IGNORECASE)
+    title_norm = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', title)).strip()
+    for h in existing:
+        h_norm = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', h)).strip()
+        if h_norm == title_norm or title_norm in h_norm or h_norm in title_norm:
+            return True
+    return False
 
 
 def _inject_heading(html: str, heading_html: str, entry: TocEntry) -> str:
